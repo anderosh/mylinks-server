@@ -8,10 +8,11 @@ const port = process.env.PORT || 3001;
 
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept'
-  );
+  // res.header(
+  //   'Access-Control-Allow-Headers',
+  //   'Origin, X-Requested-With, Content-Type, Accept'
+  // );
+  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
   res.header(
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
@@ -158,6 +159,23 @@ app.post('/new-link', requireUser, async (req, res) => {
     };
     const link = await Link.create(newLink);
     res.json(link);
+  } catch (err) {
+    if (err) {
+      console.log(err);
+    }
+  }
+});
+
+app.delete('/delete', requireUser, async (req, res) => {
+  const linkId = req.body.linkId;
+  try {
+    const link = await Link.deleteOne({ _id: linkId });
+    if (link.deletedCount != 0) {
+      console.log(link);
+      res.status(200).send('Link Deleted');
+    } else {
+      res.status(404).send('Link not found');
+    }
   } catch (err) {
     if (err) {
       console.log(err);
